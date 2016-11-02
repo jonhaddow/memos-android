@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Memo App</string>
+    <string name="add_memo_hint">Add a memo</string>
 </resources>
