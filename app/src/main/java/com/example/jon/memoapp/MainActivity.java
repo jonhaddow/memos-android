@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     // Database helper instance
-    private DbHelper mDbHelper;
+    private DbHelper mDbHelper = DbHelper.getInstance(this);
 
     // Memo list adapter
     private MemoListAdapter mMemoAdapter;
@@ -29,15 +29,13 @@ public class MainActivity extends AppCompatActivity {
         // Set up an ArrayList of memos
         mMemoList = new ArrayList<>();
 
-        // Get dbhelper class
-        mDbHelper = DbHelper.getInstance(this);
-
-        // Add all memos from database to listview
+        // Get all memos from database to listview
         mMemoList.addAll(mDbHelper.getMemos());
 
         // Construct memo list adapter to display list
         mMemoAdapter = new MemoListAdapter(this, 0, mMemoList);
         mMemoListview.setAdapter(mMemoAdapter);
+        mMemoListview.setItemsCanFocus(true);
 
 
         FloatingActionButton fabAddMemo = (FloatingActionButton) findViewById(R.id.fabAddMemo);
@@ -60,5 +58,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        System.out.println("app started.");
+
+
+
+    }
+
+    public void deleteMemo(int position) {
+        mMemoList.remove(position);
+        mMemoAdapter.notifyDataSetChanged();
+        mDbHelper.storeMemos(mMemoList);
     }
 }

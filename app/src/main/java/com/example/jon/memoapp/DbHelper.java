@@ -57,7 +57,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         // Only instantiate once
         if (dbHelperInstance == null) {
-            dbHelperInstance = new DbHelper(context.getApplicationContext());
+            dbHelperInstance = new DbHelper(context);
         }
         return dbHelperInstance;
     }

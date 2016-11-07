@@ -3,29 +3,33 @@ package com.example.jon.memoapp;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
 public class MemoListAdapter extends ArrayAdapter<String> {
 
+    private static final String TAG = "MemoListAdapter";
+
+
     private Context mContext;
+//    private DeleteBtnClickListener deleteClickListener = null;
 
     public MemoListAdapter(Context context, int resource, List<String> objects) {
         super(context, resource, objects);
 
+//        this.deleteClickListener = deleteClickListener;
         mContext = context;
     }
 
     /**
-     *  Get the layout for each row in a listview.
+     * Get the layout for each row in a listview.
      */
     @NonNull
     @Override
@@ -42,6 +46,34 @@ public class MemoListAdapter extends ArrayAdapter<String> {
         TextView text = (TextView) convertView.findViewById(R.id.tvMemoContent);
         text.setText(getItem(position));
 
+
+
+        // Get the edit and delete icons
+        ImageView ivEditMemo = (ImageView) convertView.findViewById(R.id.ivEditMemo);
+        ImageView ivDeleteMemo = (ImageView) convertView.findViewById(R.id.ivDeleteMemo);
+
+        // Set tag as current list position
+        ivEditMemo.setTag(position);
+        ivDeleteMemo.setTag(position);
+
+        ivDeleteMemo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = (int) view.getTag();
+                if(mContext instanceof MainActivity){
+                    ((MainActivity) mContext).deleteMemo(position);
+                }
+            }
+        });
+
+        ivEditMemo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = (int) view.getTag();
+            }
+        });
+
         return convertView;
     }
+
 }
