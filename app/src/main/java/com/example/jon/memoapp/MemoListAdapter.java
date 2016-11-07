@@ -3,7 +3,6 @@ package com.example.jon.memoapp;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +46,6 @@ public class MemoListAdapter extends ArrayAdapter<String> {
         text.setText(getItem(position));
 
 
-
         // Get the edit and delete icons
         ImageView ivEditMemo = (ImageView) convertView.findViewById(R.id.ivEditMemo);
         ImageView ivDeleteMemo = (ImageView) convertView.findViewById(R.id.ivDeleteMemo);
@@ -60,9 +58,7 @@ public class MemoListAdapter extends ArrayAdapter<String> {
             @Override
             public void onClick(View view) {
                 int position = (int) view.getTag();
-                if(mContext instanceof MainActivity){
-                    ((MainActivity) mContext).deleteMemo(position);
-                }
+                ((MainActivity) mContext).deleteMemo(position);
             }
         });
 
@@ -70,6 +66,7 @@ public class MemoListAdapter extends ArrayAdapter<String> {
             @Override
             public void onClick(View view) {
                 int position = (int) view.getTag();
+                ((MainActivity) mContext).editMemo(position);
             }
         });
 

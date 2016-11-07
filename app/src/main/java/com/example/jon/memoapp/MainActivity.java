@@ -1,5 +1,7 @@
 package com.example.jon.memoapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -68,5 +70,37 @@ public class MainActivity extends AppCompatActivity {
         mMemoList.remove(position);
         mMemoAdapter.notifyDataSetChanged();
         mDbHelper.storeMemos(mMemoList);
+    }
+
+    public void editMemo(final int position) {
+
+        // Create new dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit Memo");
+
+        // Set up the input box with current memo text
+        final EditText input = new EditText(this);
+        input.setText(mMemoList.get(position));
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                // Update listview with modified text
+                String text = input.getText().toString();
+                mMemoList.set(position, text);
+                mMemoAdapter.notifyDataSetChanged();
+                mDbHelper.storeMemos(mMemoList);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 }
