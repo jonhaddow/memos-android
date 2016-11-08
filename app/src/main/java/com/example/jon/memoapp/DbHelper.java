@@ -33,7 +33,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + MemoTable.TABLE_NAME + " (" +
                     MemoTable._ID + " INTEGER PRIMARY KEY," +
                     MemoTable.COLUMN_NAME_CONTENT + " TEXT," +
-                    MemoTable.COLUMN_NAME_FLAG + " TEXT" + " )";
+                    MemoTable.COLUMN_NAME_FLAG + " INTEGER" + " )";
 
     // SQL query to delete a table
     private static final String SQL_DELETE_ENTRIES =
@@ -57,7 +57,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         // Only instantiate once
         if (dbHelperInstance == null) {
-            dbHelperInstance = new DbHelper(context);
+            dbHelperInstance = new DbHelper(context.getApplicationContext());
         }
         return dbHelperInstance;
     }
@@ -82,9 +82,9 @@ public class DbHelper extends SQLiteOpenHelper {
     /**
      * Gets all rows from memos tables and return a arraylist of strings containing memos
      */
-    public ArrayList<String> getMemos() {
+    public ArrayList<Memo> getMemos() {
 
-        String[] columns = {MemoTable.COLUMN_NAME_CONTENT};
+        String[] columns = {MemoTable.COLUMN_NAME_CONTENT, MemoTable.COLUMN_NAME_FLAG};
 
         Cursor cursor = getReadableDatabase().query(
                 DbHelper.MemoTable.TABLE_NAME, // Table name
@@ -96,11 +96,13 @@ public class DbHelper extends SQLiteOpenHelper {
                 null
         );
 
-        // Convert Cursor of rows to ArrayList of strings
-        ArrayList<String> memos = new ArrayList<>();
+        // Convert Cursor of rows to ArrayList of string arrays
+        // Each string array contains a memo and its flag
+        ArrayList<Memo> memos = new ArrayList<>();
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                memos.add(cursor.getString(0));
+                Memo memo = new Memo(cursor.getString(0),cursor.getInt(1));
+                memos.add(memo);
             }
             cursor.close();
         }
@@ -110,7 +112,7 @@ public class DbHelper extends SQLiteOpenHelper {
     /**
      * For every memo in the listView, a row is added to the memos tables
      */
-    public void storeMemos(ArrayList<String> memoList) {
+    public void storeMemos(ArrayList<Memo> memos) {
 
         // Gets the database in write mode
         SQLiteDatabase db = getWritableDatabase();
@@ -122,9 +124,10 @@ public class DbHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         // For each memo in the listview, add a row to the table.
-        for (int i = 0; i < memoList.size(); i++) {
-            values.put(MemoTable.COLUMN_NAME_CONTENT, memoList.get(i));
-            values.put(MemoTable.COLUMN_NAME_FLAG, "N");
+        for (int i = 0; i < memos.size(); i++) {
+
+            values.put(MemoTable.COLUMN_NAME_CONTENT, memos.get(i).getName());
+            values.put(MemoTable.COLUMN_NAME_FLAG, memos.get(i).getFlag());
 
             // Insert the new row
             db.insert(DbHelper.MemoTable.TABLE_NAME, null, values);

@@ -3,4 +3,9 @@
     <string name="add_memo_hint">Add a memo</string>
     <string name="cd_delete_memo">delete memo</string>
     <string name="cd_edit_memo">Edit memo</string>
+    <string name="lbl_memo_name">Memo name:</string>
+    <string name="rb_text_normal">Normal</string>
+    <string name="rb_text_important">Important</string>
+    <string name="rb_text_urgent">Urgent</string>
+    <string name="lbl_flag">Flag</string>
 </resources>
