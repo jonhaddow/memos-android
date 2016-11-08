@@ -15,45 +15,54 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String MEMO_POSITION = "position";
-    public static final String MEMO_FLAG = "flag";
-    public static final String MEMO_NAME = "name";
+    // Define constants
+    public static final String INTENT_EXTRA_POSITION = "position";
+    public static final String INTENT_EXTRA_NAME = "flag";
+    public static final String INTENT_EXTRA_FLAG = "name";
     public static final int FLAG_NORMAL = 0;
     public static final int FLAG_IMPORTANT = 1;
     public static final int FLAG_URGENT = 2;
 
-
-    // Database helper instance
+    // Database helper
     private DbHelper mDbHelper;
 
-    // Memo list adapter
+    // Adapter for the memoList
     private MemoListAdapter mMemoAdapter;
+
+    // Array list of Memos
     private ArrayList<Memo> mMemos;
+
+    // User Interface references
     private ListView mMemoListview;
+    private EditText etAddMemo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Get singleton database instance
         mDbHelper = DbHelper.getInstance(this);
 
-        // Get the memo listview
+        // Get the memo list view
         mMemoListview = (ListView) findViewById(R.id.lvMemoList);
 
-        // populate memo list from database
+        // Populate memo list from database
         mMemos = mDbHelper.getMemos();
 
         // Construct memo list adapter to display list
         mMemoAdapter = new MemoListAdapter(this, 0, mMemos);
         mMemoListview.setAdapter(mMemoAdapter);
 
-        EditText etAddMemo = (EditText) findViewById(R.id.etAddMemo);
+        // Get add memo text box
+        etAddMemo = (EditText) findViewById(R.id.etAddMemo);
         etAddMemo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
+                // If enter/send key is selected...
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    // add memo
                     addMemo();
                     handled = true;
                 }
@@ -61,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // If floating action button is clicked, add memo to list
         FloatingActionButton fabAddMemo = (FloatingActionButton) findViewById(R.id.fabAddMemo);
         fabAddMemo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,17 +81,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This method adds a memo to the memo list
+     */
     private void addMemo() {
 
-        // Get memo from textbox
-        EditText memoTextbox = ((EditText) findViewById(R.id.etAddMemo));
-        String memoName = memoTextbox.getText().toString();
+        // Get memo from text box
+        String memoName = etAddMemo.getText().toString();
         mMemos.add(new Memo(memoName, MainActivity.FLAG_NORMAL));
 
-        // Clear textbox
-        memoTextbox.setText("");
+        // Clear text box
+        etAddMemo.setText("");
 
-        // Update listview
+        // Update list view
         mMemoAdapter.notifyDataSetChanged();
 
         // Send updated list to database
@@ -89,6 +101,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Called when activity is restarted. It updates the list view with memos
+     */
     @Override
     protected void onRestart() {
 
@@ -100,22 +115,35 @@ public class MainActivity extends AppCompatActivity {
         super.onRestart();
     }
 
+    /**
+     * Deletes the memo at the given position
+     * @param position Position of memo
+     */
     public void deleteMemo(int position) {
+
+        // Remove memo from list and send new list to database
         mMemos.remove(position);
         mMemoAdapter.notifyDataSetChanged();
         mDbHelper.storeMemos(mMemos);
     }
 
+    /**
+     * Passes the selected memo properties to the EditMemo activity
+     * @param position Position of memo to be edited
+     */
     public void editMemo(final int position) {
 
+        // Get the properties of the selected memo
         String memoName = mMemos.get(position).getName();
         int memoFlag = mMemos.get(position).getFlag();
 
+        // Send properties as intent extras
         Intent intent = new Intent(this, EditMemoActivity.class);
-        intent.putExtra(MEMO_POSITION, position);
-        intent.putExtra(MEMO_NAME, memoName);
-        intent.putExtra(MEMO_FLAG, memoFlag);
+        intent.putExtra(INTENT_EXTRA_POSITION, position);
+        intent.putExtra(INTENT_EXTRA_FLAG, memoName);
+        intent.putExtra(INTENT_EXTRA_NAME, memoFlag);
 
+        // Start EditMemo Activity
         startActivity(intent);
     }
 }
