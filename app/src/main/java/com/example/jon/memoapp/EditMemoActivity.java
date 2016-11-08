@@ -37,6 +37,9 @@ public class EditMemoActivity extends AppCompatActivity {
         etMemoName = (EditText) findViewById(R.id.etMemoName);
         etMemoName.setText(memoName);
 
+        // Move cursor to the end of memo name
+        etMemoName.setSelection(etMemoName.getText().length());
+
         // Set radio button to the corresponding flag of memo
         switch (memoFlag) {
             case MainActivity.FLAG_NORMAL:

@@ -129,21 +129,15 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        
+
                         // Remove memo from list and send new list to database
                         mMemos.remove(position);
                         mDbHelper.storeMemos(mMemos);
                         populateListView();
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
+                .setNegativeButton("Cancel", null)
                 .show();
-
-
     }
 
     /**
