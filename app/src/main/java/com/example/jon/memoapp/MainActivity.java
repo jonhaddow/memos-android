@@ -49,12 +49,7 @@ public class MainActivity extends AppCompatActivity {
         // Get the memo list view
         mMemoListview = (ListView) findViewById(R.id.lvMemoList);
 
-        // Populate memo list from database
-        mMemos = mDbHelper.getMemos();
-
-        // Construct memo list adapter to display list
-        mMemoAdapter = new MemoListAdapter(this, 0, mMemos);
-        mMemoListview.setAdapter(mMemoAdapter);
+        populateListView();
 
         // Get add memo text box
         etAddMemo = (EditText) findViewById(R.id.etAddMemo);
@@ -109,12 +104,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
 
+        populateListView();
+        super.onRestart();
+    }
+
+    public void populateListView() {
+
         // Populate memo list with updated memos from database
         mMemos = mDbHelper.getMemos();
         mMemoAdapter = new MemoListAdapter(this, 0, mMemos);
         mMemoListview.setAdapter(mMemoAdapter);
-
-        super.onRestart();
     }
 
     /**
@@ -130,10 +129,11 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        
                         // Remove memo from list and send new list to database
                         mMemos.remove(position);
-                        mMemoAdapter.notifyDataSetChanged();
                         mDbHelper.storeMemos(mMemos);
+                        populateListView();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -165,5 +165,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Start EditMemo Activity
         startActivity(intent);
+
     }
 }

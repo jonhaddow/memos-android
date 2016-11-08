@@ -3,12 +3,13 @@ package com.example.jon.memoapp;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -38,12 +39,16 @@ public class MemoListAdapter extends ArrayAdapter<Memo> {
 
         // get current memo
         Memo memo = getItem(position);
+        String memoName = null;
+        int memoFlag = 0;
+        if (memo != null) {
+            memoName = memo.getName();
+            memoFlag = memo.getFlag();
+        }
 
         // Set the memo content for this row.
         TextView text = (TextView) convertView.findViewById(R.id.tvMemoContent);
-        if (memo != null) {
-            text.setText(memo.getName());
-        }
+        text.setText(memoName);
 
         // Get the edit and delete icons and set OnClickListeners
         ImageView ivEditMemo = (ImageView) convertView.findViewById(R.id.ivEditMemo);
@@ -59,10 +64,18 @@ public class MemoListAdapter extends ArrayAdapter<Memo> {
         ivEditMemo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int position = (int) view.getTag();
                 ((MainActivity) mContext).editMemo(position);
             }
         });
+
+        // Set background colour based on memo flag
+        LinearLayout memoRow = (LinearLayout) convertView.findViewById(R.id.memoListRow);
+
+        if (memoFlag == MainActivity.FLAG_IMPORTANT) {
+            memoRow.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorImportantFlag));
+        } else if (memoFlag == MainActivity.FLAG_URGENT) {
+            memoRow.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorUrgentFlag));
+        }
 
         return convertView;
     }
