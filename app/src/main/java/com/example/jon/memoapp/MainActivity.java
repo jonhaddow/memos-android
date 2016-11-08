@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
         populateListView();
 
+        mMemoListview.setEmptyView(findViewById(android.R.id.empty));
+
         // Get add memo text box
         etAddMemo = (EditText) findViewById(R.id.etAddMemo);
         etAddMemo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -85,17 +87,22 @@ public class MainActivity extends AppCompatActivity {
 
         // Get memo from text box
         String memoName = etAddMemo.getText().toString();
-        mMemos.add(new Memo(memoName, MainActivity.FLAG_NORMAL));
 
-        // Clear text box
-        etAddMemo.setText("");
+        // Check that string is not empty
+        if (!memoName.equals("")) {
 
-        // Update list view
-        mMemoAdapter.notifyDataSetChanged();
+            // Add memo to list
+            mMemos.add(new Memo(memoName, MainActivity.FLAG_NORMAL));
 
-        // Send updated list to database
-        mDbHelper.storeMemos(mMemos);
+            // Clear text box
+            etAddMemo.setText("");
 
+            // Update list view
+            mMemoAdapter.notifyDataSetChanged();
+
+            // Send updated list to database
+            mDbHelper.storeMemos(mMemos);
+        }
     }
 
     /**

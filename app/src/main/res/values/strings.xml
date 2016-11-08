@@ -7,5 +7,7 @@
     <string name="rb_text_normal">Normal</string>
     <string name="rb_text_important">Important</string>
     <string name="rb_text_urgent">Urgent</string>
-    <string name="lbl_flag">Flag</string>
+    <string name="lbl_flag">Set a flag:</string>
+    <string name="lbl_alert">Set an alert:</string>
+    <string name="empty_view_text">No memos to display</string>
 </resources>

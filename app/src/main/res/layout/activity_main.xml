@@ -15,7 +15,14 @@
         tools:listitem="@layout/memo_item">
 
     </ListView>
-
+    <TextView
+        android:id="@android:id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/empty_view_text"
+        android:textSize="16sp"
+        android:gravity="center"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
