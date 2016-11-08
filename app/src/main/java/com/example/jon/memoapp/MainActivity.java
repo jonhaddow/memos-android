@@ -4,9 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -45,29 +48,44 @@ public class MainActivity extends AppCompatActivity {
         mMemoAdapter = new MemoListAdapter(this, 0, mMemos);
         mMemoListview.setAdapter(mMemoAdapter);
 
+        EditText etAddMemo = (EditText) findViewById(R.id.etAddMemo);
+        etAddMemo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    addMemo();
+                    handled = true;
+                }
+                return handled;
+            }
+        });
+
         FloatingActionButton fabAddMemo = (FloatingActionButton) findViewById(R.id.fabAddMemo);
         fabAddMemo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                // Get memo from textbox
-                EditText memoTextbox = ((EditText) findViewById(R.id.etAddMemo));
-                String memoName = memoTextbox.getText().toString();
-                mMemos.add(new Memo(memoName, MainActivity.FLAG_NORMAL));
-
-                // Clear textbox
-                memoTextbox.setText("");
-
-                // Update listview
-                mMemoAdapter.notifyDataSetChanged();
-
-                // Send updated list to database
-                mDbHelper.storeMemos(mMemos);
+                addMemo();
             }
         });
 
-        System.out.println("app started.");
+    }
 
+    private void addMemo() {
+
+        // Get memo from textbox
+        EditText memoTextbox = ((EditText) findViewById(R.id.etAddMemo));
+        String memoName = memoTextbox.getText().toString();
+        mMemos.add(new Memo(memoName, MainActivity.FLAG_NORMAL));
+
+        // Clear textbox
+        memoTextbox.setText("");
+
+        // Update listview
+        mMemoAdapter.notifyDataSetChanged();
+
+        // Send updated list to database
+        mDbHelper.storeMemos(mMemos);
 
     }
 

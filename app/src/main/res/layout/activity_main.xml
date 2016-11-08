@@ -24,10 +24,12 @@
 
         <EditText
             android:id="@+id/etAddMemo"
+            android:inputType="text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/add_memo_hint" />
+            android:hint="@string/add_memo_hint"
+            android:imeOptions="actionSend"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabAddMemo"
