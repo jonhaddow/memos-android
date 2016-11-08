@@ -1,8 +1,10 @@
 package com.example.jon.memoapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -117,18 +119,36 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Deletes the memo at the given position
+     *
      * @param position Position of memo
      */
-    public void deleteMemo(int position) {
+    public void deleteMemo(final int position) {
 
-        // Remove memo from list and send new list to database
-        mMemos.remove(position);
-        mMemoAdapter.notifyDataSetChanged();
-        mDbHelper.storeMemos(mMemos);
+        // Confirm removal of memo
+        new AlertDialog.Builder(this)
+                .setMessage("Are you sure?")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Remove memo from list and send new list to database
+                        mMemos.remove(position);
+                        mMemoAdapter.notifyDataSetChanged();
+                        mDbHelper.storeMemos(mMemos);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                })
+                .show();
+
+
     }
 
     /**
      * Passes the selected memo properties to the EditMemo activity
+     *
      * @param position Position of memo to be edited
      */
     public void editMemo(final int position) {

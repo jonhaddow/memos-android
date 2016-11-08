@@ -27,7 +27,7 @@ public class MemoListAdapter extends ArrayAdapter<Memo> {
      */
     @NonNull
     @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
 
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
@@ -45,18 +45,13 @@ public class MemoListAdapter extends ArrayAdapter<Memo> {
             text.setText(memo.getName());
         }
 
-        // Get the edit and delete icons
+        // Get the edit and delete icons and set OnClickListeners
         ImageView ivEditMemo = (ImageView) convertView.findViewById(R.id.ivEditMemo);
         ImageView ivDeleteMemo = (ImageView) convertView.findViewById(R.id.ivDeleteMemo);
-
-        // Set tag as current list position
-        ivEditMemo.setTag(position);
-        ivDeleteMemo.setTag(position);
 
         ivDeleteMemo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int position = (int) view.getTag();
                 ((MainActivity) mContext).deleteMemo(position);
             }
         });
