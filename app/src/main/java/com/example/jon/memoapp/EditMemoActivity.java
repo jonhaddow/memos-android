@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 
@@ -18,6 +19,7 @@ public class EditMemoActivity extends AppCompatActivity {
 
     // User interface references
     private EditText etMemoName;
+    private Button btnSetAlert;
 
     /**
      * Called when activity is created.
@@ -37,6 +39,10 @@ public class EditMemoActivity extends AppCompatActivity {
         etMemoName = (EditText) findViewById(R.id.etMemoName);
         etMemoName.setText(memoName);
 
+        // Get setAlert button reference
+        btnSetAlert = (Button) findViewById(R.id.btnSetAlert);
+        btnSetAlert.setVisibility(View.INVISIBLE);
+
         // Move cursor to the end of memo name
         etMemoName.setSelection(etMemoName.getText().length());
 
@@ -50,6 +56,7 @@ public class EditMemoActivity extends AppCompatActivity {
                 break;
             case MainActivity.FLAG_URGENT:
                 ((RadioButton) findViewById(R.id.rbUrgent)).toggle();
+                btnSetAlert.setVisibility(View.VISIBLE);
                 break;
         }
 
@@ -61,6 +68,8 @@ public class EditMemoActivity extends AppCompatActivity {
      */
     public void onRadioButtonClicked(View view) {
 
+        btnSetAlert.setVisibility(View.INVISIBLE);
+
         // Check which button was selected. Set flag to the correct button.
         switch (view.getId()) {
             case R.id.rbNormal:
@@ -71,6 +80,7 @@ public class EditMemoActivity extends AppCompatActivity {
                 break;
             case R.id.rbUrgent:
                 memoFlag = MainActivity.FLAG_URGENT;
+                btnSetAlert.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -113,6 +123,14 @@ public class EditMemoActivity extends AppCompatActivity {
 
         // Send back to database
         dbHelper.storeMemos(memos);
+
+    }
+
+    /**
+     * Called when setAlert button is pressed
+     * @param view The setAlert button pressed
+     */
+    public void setAlert(View view) {
 
     }
 }

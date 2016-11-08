@@ -72,12 +72,13 @@
             android:layout_width="wrap_content"
             android:layout_height="30dp" />
 
-        <TextView
+        <Button
+            android:id="@+id/btnSetAlert"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/lbl_alert" />
-
-
+            android:text="@string/btn_set_alert"
+            android:onClick="setAlert"
+            android:layout_gravity="center_horizontal"/>
 
     </LinearLayout>
 </ScrollView>
