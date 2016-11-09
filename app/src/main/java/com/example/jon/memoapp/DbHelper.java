@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class DbHelper extends SQLiteOpenHelper {
 
     // Database string constants
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "MemosDatabase";
 
     /**
@@ -23,21 +23,51 @@ public class DbHelper extends SQLiteOpenHelper {
      * BaseColumns superclass contains _ID string constant.
      */
     private static class MemoTable implements BaseColumns {
+        private static final String TABLE_NAME = "memos";
         private static final String COLUMN_NAME_FLAG = "flag";
         private static final String COLUMN_NAME_CONTENT = "content";
-        private static final String TABLE_NAME = "memos";
     }
 
-    // SQL Query to create a table
-    private static final String SQL_CREATE_ENTRIES =
+    /**
+     * Inner class that defines the alert table string constants.
+     * BaseColumns superclass contains _ID string constant.
+     */
+    private static class AlertTable implements BaseColumns {
+        private static final String TABLE_NAME = "alerts";
+        private static final String COLUMN_NAME_YEAR = "year";
+        private static final String COLUMN_NAME_MONTH = "month";
+        private static final String COLUMN_NAME_DAY = "day";
+        private static final String COLUMN_NAME_HOUR = "hour";
+        private static final String COLUMN_NAME_MINUTE = "minute";
+        private static final String COLUMN_NAME_MEMO_ID = "memoId";
+    }
+
+    // SQL Query to create a memo table
+    private static final String SQL_CREATE_MEMO_TABLE =
             "CREATE TABLE " + MemoTable.TABLE_NAME + " (" +
                     MemoTable._ID + " INTEGER PRIMARY KEY," +
-                    MemoTable.COLUMN_NAME_CONTENT + " TEXT," +
-                    MemoTable.COLUMN_NAME_FLAG + " INTEGER" + " )";
+                    MemoTable.COLUMN_NAME_CONTENT + " TEXT NOT NULL," +
+                    MemoTable.COLUMN_NAME_FLAG + " INTEGER NOT NULL )";
 
-    // SQL query to delete a table
-    private static final String SQL_DELETE_ENTRIES =
+    // SQL Query to create a alert table
+    private static final String SQL_CREATE_ALERT_TABLE =
+            "CREATE TABLE " + AlertTable.TABLE_NAME + " (" +
+                    AlertTable._ID + " INTEGER PRIMARY KEY," +
+                    AlertTable.COLUMN_NAME_YEAR + " INTEGER NOT NULL," +
+                    AlertTable.COLUMN_NAME_MONTH + " INTEGER NOT NULL," +
+                    AlertTable.COLUMN_NAME_DAY + " INTEGER NOT NULL," +
+                    AlertTable.COLUMN_NAME_HOUR + " INTEGER NOT NULL," +
+                    AlertTable.COLUMN_NAME_MINUTE + " INTEGER NOT NULL," +
+                    AlertTable.COLUMN_NAME_MEMO_ID + " INTEGER NOT NULL," +
+                    "FOREIGN KEY(" + AlertTable.COLUMN_NAME_MEMO_ID + ") REFERENCES " + MemoTable.TABLE_NAME + " (" + MemoTable._ID + "))";
+
+    // SQL query to delete memo table
+    private static final String SQL_DELETE_MEMO_TABLE =
             "DROP TABLE IF EXISTS " + MemoTable.TABLE_NAME;
+
+    // SQL query to delete alert table
+    private static final String SQL_DELETE_ALERT_TABLE =
+            "DROP TABLE IF EXISTS " + AlertTable.TABLE_NAME;
 
     // The class instance.
     private static DbHelper dbHelperInstance;
@@ -63,11 +93,12 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Runs a query to create a memos table
+     * Runs a query to create tables
      */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL(SQL_CREATE_ENTRIES);
+        sqLiteDatabase.execSQL(SQL_CREATE_MEMO_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_ALERT_TABLE);
     }
 
     /**
@@ -75,20 +106,19 @@ public class DbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES);
+        sqLiteDatabase.execSQL(SQL_DELETE_MEMO_TABLE);
+        sqLiteDatabase.execSQL(SQL_DELETE_ALERT_TABLE);
         onCreate(sqLiteDatabase);
     }
 
     /**
-     * Gets all rows from memos tables and return a arraylist of strings containing memos
+     * Gets all rows from memo tables and return an array list containing memos
      */
     public ArrayList<Memo> getMemos() {
 
-        String[] columns = {MemoTable.COLUMN_NAME_CONTENT, MemoTable.COLUMN_NAME_FLAG};
-
         Cursor cursor = getReadableDatabase().query(
                 DbHelper.MemoTable.TABLE_NAME, // Table name
-                columns, // Columns wanted
+                null,
                 null,
                 null,
                 null,
@@ -96,12 +126,11 @@ public class DbHelper extends SQLiteOpenHelper {
                 null
         );
 
-        // Convert Cursor of rows to ArrayList of string arrays
-        // Each string array contains a memo and its flag
+        // Convert Cursor of rows to ArrayList of Memos
         ArrayList<Memo> memos = new ArrayList<>();
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                Memo memo = new Memo(cursor.getString(0),cursor.getInt(1));
+                Memo memo = new Memo(cursor.getInt(0), cursor.getString(1), cursor.getInt(2));
                 memos.add(memo);
             }
             cursor.close();
@@ -112,7 +141,7 @@ public class DbHelper extends SQLiteOpenHelper {
     /**
      * For every memo in the listView, a row is added to the memos tables
      */
-    public void storeMemos(ArrayList<Memo> memos) {
+    public void addMemos(ArrayList<Memo> memos) {
 
         // Gets the database in write mode
         SQLiteDatabase db = getWritableDatabase();
@@ -132,6 +161,71 @@ public class DbHelper extends SQLiteOpenHelper {
             // Insert the new row
             db.insert(DbHelper.MemoTable.TABLE_NAME, null, values);
         }
+    }
 
+    /**
+     * Gets all rows from alert table and return an array list containing alerts
+     */
+    public ArrayList<Alert> getAlerts() {
+
+
+        Cursor cursor = getReadableDatabase().query(
+                DbHelper.AlertTable.TABLE_NAME, // Table name
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        // Convert Cursor of rows to ArrayList of Alerts
+        ArrayList<Alert> alerts = new ArrayList<>();
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+
+                Alert alert = new Alert(
+                        cursor.getInt(0),
+                        cursor.getInt(1),
+                        cursor.getInt(2),
+                        cursor.getInt(3),
+                        cursor.getInt(4),
+                        cursor.getInt(5)
+                );
+                alerts.add(alert);
+            }
+            cursor.close();
+        }
+        return alerts;
+
+    }
+
+    /**
+     * For every alert in the listView, a row is added to the alerts tables
+     */
+    public void addAlerts(ArrayList<Alert> alerts) {
+
+        // Gets the database in write mode
+        SQLiteDatabase db = getWritableDatabase();
+
+        // Delete all rows in table
+        db.delete(DbHelper.AlertTable.TABLE_NAME, null, null);
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+
+        // For each alert, add a row to the table.
+        for (int i = 0; i < alerts.size(); i++) {
+
+            values.put(AlertTable.COLUMN_NAME_YEAR, alerts.get(i).getYear());
+            values.put(AlertTable.COLUMN_NAME_MONTH, alerts.get(i).getMonth());
+            values.put(AlertTable.COLUMN_NAME_DAY, alerts.get(i).getDay());
+            values.put(AlertTable.COLUMN_NAME_HOUR, alerts.get(i).getHour());
+            values.put(AlertTable.COLUMN_NAME_MINUTE, alerts.get(i).getMinute());
+            values.put(AlertTable.COLUMN_NAME_MEMO_ID, alerts.get(i).getMemoId());
+
+            // Insert the new row
+            db.insert(DbHelper.AlertTable.TABLE_NAME, null, values);
+        }
     }
 }

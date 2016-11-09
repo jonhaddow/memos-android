@@ -1,25 +1,44 @@
 package com.example.jon.memoapp;
 
+import android.app.DatePickerDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.TimePicker;
 
 import java.util.ArrayList;
 
-public class EditMemoActivity extends AppCompatActivity {
+public class EditMemoActivity extends AppCompatActivity
+        implements DatePickerDialog.OnDateSetListener,
+        TimePickerDialog.OnTimeSetListener {
+
 
     // Properties of current memo being edited
-    private String memoName;
-    private int memoFlag;
-    private int memoPosition;
+    private int mMemoPosition;
+    private int mMemoId;
+    private String mMemoName;
+    private int mMemoFlag;
 
     // User interface references
     private EditText etMemoName;
     private Button btnSetAlert;
+    private int alertYear;
+    private int alertMonth;
+    private int alertDay;
+    private int alertHour;
+    private int alertMinute;
 
     /**
      * Called when activity is created.
@@ -31,13 +50,14 @@ public class EditMemoActivity extends AppCompatActivity {
 
         // Get intent and memo properties from intent extras.
         Intent intent = getIntent();
-        memoPosition = intent.getIntExtra(MainActivity.INTENT_EXTRA_POSITION, 0);
-        memoName = intent.getStringExtra(MainActivity.INTENT_EXTRA_FLAG);
-        memoFlag = intent.getIntExtra(MainActivity.INTENT_EXTRA_NAME, 0);
+        mMemoPosition = intent.getIntExtra(MainActivity.INTENT_EXTRA_POSITION, 0);
+        mMemoId = intent.getIntExtra(MainActivity.INTENT_EXTRA_ID, 0);
+        mMemoName = intent.getStringExtra(MainActivity.INTENT_EXTRA_NAME);
+        mMemoFlag = intent.getIntExtra(MainActivity.INTENT_EXTRA_FLAG, 0);
 
         // Get reference to the memo text box and set text as memo name
         etMemoName = (EditText) findViewById(R.id.etMemoName);
-        etMemoName.setText(memoName);
+        etMemoName.setText(mMemoName);
 
         // Get setAlert button reference
         btnSetAlert = (Button) findViewById(R.id.btnSetAlert);
@@ -47,7 +67,7 @@ public class EditMemoActivity extends AppCompatActivity {
         etMemoName.setSelection(etMemoName.getText().length());
 
         // Set radio button to the corresponding flag of memo
-        switch (memoFlag) {
+        switch (mMemoFlag) {
             case MainActivity.FLAG_NORMAL:
                 ((RadioButton) findViewById(R.id.rbNormal)).toggle();
                 break;
@@ -64,6 +84,7 @@ public class EditMemoActivity extends AppCompatActivity {
 
     /**
      * This is called by the each radio button in the xml.
+     *
      * @param view The radio button calling the function
      */
     public void onRadioButtonClicked(View view) {
@@ -73,13 +94,13 @@ public class EditMemoActivity extends AppCompatActivity {
         // Check which button was selected. Set flag to the correct button.
         switch (view.getId()) {
             case R.id.rbNormal:
-                memoFlag = MainActivity.FLAG_NORMAL;
+                mMemoFlag = MainActivity.FLAG_NORMAL;
                 break;
             case R.id.rbImportant:
-                memoFlag = MainActivity.FLAG_IMPORTANT;
+                mMemoFlag = MainActivity.FLAG_IMPORTANT;
                 break;
             case R.id.rbUrgent:
-                memoFlag = MainActivity.FLAG_URGENT;
+                mMemoFlag = MainActivity.FLAG_URGENT;
                 btnSetAlert.setVisibility(View.VISIBLE);
                 break;
         }
@@ -116,21 +137,84 @@ public class EditMemoActivity extends AppCompatActivity {
         ArrayList<Memo> memos = dbHelper.getMemos();
 
         // Get new memo name
-        memoName = etMemoName.getText().toString();
+        mMemoName = etMemoName.getText().toString();
 
         // Override memo with new data
-        memos.set(memoPosition, new Memo(memoName,memoFlag));
+        memos.set(mMemoPosition, new Memo(mMemoName, mMemoFlag));
 
         // Send back to database
-        dbHelper.storeMemos(memos);
+        dbHelper.addMemos(memos);
 
     }
 
     /**
      * Called when setAlert button is pressed
+     *
      * @param view The setAlert button pressed
      */
     public void setAlert(View view) {
+
+        new DatePickerFragment().show(getFragmentManager(), "datePicker");
+
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+
+        alertYear = year;
+        alertMonth = month;
+        alertDay = day;
+
+        // Start timeListener
+        new TimePickerFragment().show(getFragmentManager(), "timePicker");
+    }
+
+    @Override
+    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+
+        alertHour = hour;
+        alertMinute = minute;
+
+        createAlert();
+
+    }
+
+    private void createAlert() {
+
+        Alert alert = new Alert(alertYear, alertMonth, alertDay, alertHour, alertMinute, mMemoId);
+
+        DbHelper dbHelper = DbHelper.getInstance(this);
+        ArrayList<Alert> alerts = dbHelper.getAlerts();
+        alerts.add(alert);
+        dbHelper.addAlerts(alerts);
+
+        Notification.Builder mBuilder =
+                new Notification.Builder(this)
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setContentTitle("Memo Alert")
+                        .setContentText(mMemoName);
+
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(mMemoId, mBuilder.build());
 
     }
 }

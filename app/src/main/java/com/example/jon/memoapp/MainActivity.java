@@ -19,8 +19,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Define constants
     public static final String INTENT_EXTRA_POSITION = "position";
-    public static final String INTENT_EXTRA_NAME = "flag";
-    public static final String INTENT_EXTRA_FLAG = "name";
+    public static final String INTENT_EXTRA_ID = "id";
+    public static final String INTENT_EXTRA_FLAG = "flag";
+    public static final String INTENT_EXTRA_NAME = "name";
     public static final int FLAG_NORMAL = 0;
     public static final int FLAG_IMPORTANT = 1;
     public static final int FLAG_URGENT = 2;
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             mMemoAdapter.notifyDataSetChanged();
 
             // Send updated list to database
-            mDbHelper.storeMemos(mMemos);
+            mDbHelper.addMemos(mMemos);
         }
     }
 
@@ -139,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Remove memo from list and send new list to database
                         mMemos.remove(position);
-                        mDbHelper.storeMemos(mMemos);
+                        mDbHelper.addMemos(mMemos);
                         populateListView();
                     }
                 })
@@ -155,14 +156,16 @@ public class MainActivity extends AppCompatActivity {
     public void editMemo(final int position) {
 
         // Get the properties of the selected memo
+        int memoId = mMemos.get(position).getId();
         String memoName = mMemos.get(position).getName();
         int memoFlag = mMemos.get(position).getFlag();
 
         // Send properties as intent extras
         Intent intent = new Intent(this, EditMemoActivity.class);
         intent.putExtra(INTENT_EXTRA_POSITION, position);
-        intent.putExtra(INTENT_EXTRA_FLAG, memoName);
-        intent.putExtra(INTENT_EXTRA_NAME, memoFlag);
+        intent.putExtra(INTENT_EXTRA_ID, memoId);
+        intent.putExtra(INTENT_EXTRA_NAME, memoName);
+        intent.putExtra(INTENT_EXTRA_FLAG, memoFlag);
 
         // Start EditMemo Activity
         startActivity(intent);

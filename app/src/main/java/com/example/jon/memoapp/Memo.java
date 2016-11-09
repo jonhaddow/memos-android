@@ -2,6 +2,8 @@ package com.example.jon.memoapp;
 
 public class Memo {
 
+    private int id;
+
     // String content of memo
     private String name;
 
@@ -19,6 +21,16 @@ public class Memo {
         this.flag = flag;
     }
 
+    public Memo(int id, String name, int flag) {
+        this.id = id;
+        this.name = name;
+        this.flag = flag;
+    }
+
+    public int getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
@@ -26,6 +38,7 @@ public class Memo {
     public int getFlag() {
         return flag;
     }
+
 
 
 }
