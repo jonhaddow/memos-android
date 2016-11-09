@@ -8,22 +8,30 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import java.util.ArrayList;
+
 public class AlertReceiver extends BroadcastReceiver {
 
     /**
      * This method is called an alert is triggered.
+     *
      * @param context Context where the alert was set
-     * @param intent Intent sent with the alert
+     * @param intent  Intent sent with the alert
      */
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        DbHelper dbHelper = DbHelper.getInstance(context);
+
+        int memoId = intent.getIntExtra(MainActivity.INTENT_EXTRA_ID, 0);
+        String memoName = intent.getStringExtra(MainActivity.INTENT_EXTRA_NAME);
 
         // Create notification with Memo Name
         Notification.Builder mBuilder =
                 new Notification.Builder(context)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle("Memo Alert")
-                        .setContentText(intent.getStringExtra(MainActivity.INTENT_EXTRA_NAME))
+                        .setContentText(memoName)
                         .setAutoCancel(true);
 
         // Creates an explicit intent for the MainActivity when user clicks on notification
@@ -35,13 +43,17 @@ public class AlertReceiver extends BroadcastReceiver {
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(
                         0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        PendingIntent.FLAG_ONE_SHOT
                 );
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // mId allows you to update the notification later on.
-        mNotificationManager.notify(intent.getIntExtra(MainActivity.INTENT_EXTRA_ID, 0), mBuilder.build());
+        mNotificationManager.notify(memoId, mBuilder.build());
+
+        // Delete alert from table
+        dbHelper.removeAlert(memoId);
+
     }
 }

@@ -185,12 +185,12 @@ public class DbHelper extends SQLiteOpenHelper {
             while (cursor.moveToNext()) {
 
                 Alert alert = new Alert(
-                        cursor.getInt(0),
                         cursor.getInt(1),
                         cursor.getInt(2),
                         cursor.getInt(3),
                         cursor.getInt(4),
-                        cursor.getInt(5)
+                        cursor.getInt(5),
+                        cursor.getInt(6)
                 );
                 alerts.add(alert);
             }
@@ -227,5 +227,47 @@ public class DbHelper extends SQLiteOpenHelper {
             // Insert the new row
             db.insert(DbHelper.AlertTable.TABLE_NAME, null, values);
         }
+    }
+
+    public void removeAlert(int memoId) {
+
+        // Gets the database in write mode
+        SQLiteDatabase db = getWritableDatabase();
+
+        // Delete row containing memoId
+        db.delete(AlertTable.TABLE_NAME, AlertTable.COLUMN_NAME_MEMO_ID + " = " + memoId, null);
+
+        System.out.println("alert removed");
+
+    }
+
+
+    public Alert getCurrentAlert(int memoId) {
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(
+                AlertTable.TABLE_NAME, null,
+                AlertTable.COLUMN_NAME_MEMO_ID + " = " + memoId,
+                null,
+                null,
+                null,
+                null
+        );
+
+        Alert alert;
+        if (!(cursor.moveToFirst()) || cursor.getCount() == 0) {
+            alert = null;
+        } else {
+            alert = new Alert(
+                    cursor.getInt(1),
+                    cursor.getInt(2),
+                    cursor.getInt(3),
+                    cursor.getInt(4),
+                    cursor.getInt(5),
+                    memoId
+            );
+        }
+        cursor.close();
+        return alert;
     }
 }

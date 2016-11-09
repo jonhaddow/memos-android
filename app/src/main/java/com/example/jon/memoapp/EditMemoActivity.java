@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ public class EditMemoActivity extends AppCompatActivity
     private int alertDay;
     private int alertHour;
     private int alertMinute;
+    private TextView tvCurrentAlert;
+    private DbHelper mDbHelper;
+    private Alert mCurrentAlert;
 
     /**
      * Called when activity is created.
@@ -59,7 +63,6 @@ public class EditMemoActivity extends AppCompatActivity
 
         // Get setAlert button reference
         btnSetAlert = (Button) findViewById(R.id.btnSetAlert);
-        btnSetAlert.setVisibility(View.INVISIBLE);
 
         // Move cursor to the end of memo name
         etMemoName.setSelection(etMemoName.getText().length());
@@ -74,9 +77,17 @@ public class EditMemoActivity extends AppCompatActivity
                 break;
             case MainActivity.FLAG_URGENT:
                 ((RadioButton) findViewById(R.id.rbUrgent)).toggle();
-                btnSetAlert.setVisibility(View.VISIBLE);
                 break;
         }
+
+        // Get database instance
+        mDbHelper = DbHelper.getInstance(this);
+
+        // Get current alert text view and set on click listener for cancelling alert
+        tvCurrentAlert = (TextView) findViewById(R.id.tvCurrentAlert);
+
+        // Update UI
+        setVisibility();
 
     }
 
@@ -86,8 +97,6 @@ public class EditMemoActivity extends AppCompatActivity
      * @param view The radio button calling the function
      */
     public void onRadioButtonClicked(View view) {
-
-        btnSetAlert.setVisibility(View.INVISIBLE);
 
         // Check which button was selected. Set flag to the correct button.
         switch (view.getId()) {
@@ -99,8 +108,47 @@ public class EditMemoActivity extends AppCompatActivity
                 break;
             case R.id.rbUrgent:
                 mMemoFlag = MainActivity.FLAG_URGENT;
-                btnSetAlert.setVisibility(View.VISIBLE);
                 break;
+        }
+
+        // Update UI
+        setVisibility();
+    }
+
+    /**
+     * This method checks if a memo flag is on urgent.
+     * If alert has been set, show textview with alert details,
+     * else show "set alert" button
+     */
+    private void setVisibility() {
+
+        mCurrentAlert = mDbHelper.getCurrentAlert(mMemoId);
+
+        if (mMemoFlag == MainActivity.FLAG_URGENT) {
+            if (mCurrentAlert != null) {
+                tvCurrentAlert.setVisibility(View.VISIBLE);
+                btnSetAlert.setVisibility(View.INVISIBLE);
+
+            } else {
+                tvCurrentAlert.setVisibility(View.INVISIBLE);
+                btnSetAlert.setVisibility(View.VISIBLE);
+            }
+        } else {
+            tvCurrentAlert.setVisibility(View.INVISIBLE);
+            btnSetAlert.setVisibility(View.INVISIBLE);
+        }
+
+
+        if (mCurrentAlert != null) {
+
+            int month = mCurrentAlert.getMonth()+1;
+            String text2display = "Alert set for: " +
+                    mCurrentAlert.getHour() + ":" + mCurrentAlert.getMinute() +
+                    " on " + mCurrentAlert.getDay()+"/"+month+"/"+mCurrentAlert.getYear();
+
+            tvCurrentAlert.setText(text2display);
+        } else {
+            tvCurrentAlert.setText("");
         }
     }
 
@@ -191,20 +239,27 @@ public class EditMemoActivity extends AppCompatActivity
         Intent intentAlarm = new Intent(this, AlertReceiver.class);
 
         // Add intent extras
+        intentAlarm.putExtra(MainActivity.INTENT_EXTRA_POSITION, mMemoPosition);
         intentAlarm.putExtra(MainActivity.INTENT_EXTRA_NAME, mMemoName);
         intentAlarm.putExtra(MainActivity.INTENT_EXTRA_ID, mMemoId);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         // Set the exact time when the user will be notified
         Calendar cal = Calendar.getInstance();
-        cal.set(alertYear, alertMonth, alertDay, alertHour, alertMinute);
+        cal.set(alertYear, alertMonth, alertDay, alertHour, alertMinute, 0);
+
+        // Set up pending intent to send a broadcast
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, mMemoId, intentAlarm, PendingIntent.FLAG_ONE_SHOT);
 
         // Set the alarm
         alarmManager.set(
                 AlarmManager.RTC_WAKEUP,
                 cal.getTimeInMillis(),
-                PendingIntent.getBroadcast(this, 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT)
+                pendingIntent
         );
+
+        // update UI
+        setVisibility();
 
     }
 }
