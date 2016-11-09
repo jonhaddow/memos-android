@@ -1,15 +1,12 @@
 package com.example.jon.memoapp;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +16,7 @@ import android.widget.RadioButton;
 import android.widget.TimePicker;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class EditMemoActivity extends AppCompatActivity
         implements DatePickerDialog.OnDateSetListener,
@@ -183,38 +181,30 @@ public class EditMemoActivity extends AppCompatActivity
 
         Alert alert = new Alert(alertYear, alertMonth, alertDay, alertHour, alertMinute, mMemoId);
 
+        // Add alert to alerts table
         DbHelper dbHelper = DbHelper.getInstance(this);
         ArrayList<Alert> alerts = dbHelper.getAlerts();
         alerts.add(alert);
         dbHelper.addAlerts(alerts);
 
-        Notification.Builder mBuilder =
-                new Notification.Builder(this)
-                        .setSmallIcon(R.drawable.ic_notification)
-                        .setContentTitle("Memo Alert")
-                        .setContentText(mMemoName);
+        // Create an Intent and the class which will execute when Alarm triggers
+        Intent intentAlarm = new Intent(this, AlertReceiver.class);
 
-        // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(this, MainActivity.class);
+        // Add intent extras
+        intentAlarm.putExtra(MainActivity.INTENT_EXTRA_NAME, mMemoName);
+        intentAlarm.putExtra(MainActivity.INTENT_EXTRA_ID, mMemoId);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // Set the exact time when the user will be notified
+        Calendar cal = Calendar.getInstance();
+        cal.set(alertYear, alertMonth, alertDay, alertHour, alertMinute);
 
-        // mId allows you to update the notification later on.
-        mNotificationManager.notify(mMemoId, mBuilder.build());
+        // Set the alarm
+        alarmManager.set(
+                AlarmManager.RTC_WAKEUP,
+                cal.getTimeInMillis(),
+                PendingIntent.getBroadcast(this, 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT)
+        );
 
     }
 }

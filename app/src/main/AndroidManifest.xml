@@ -19,6 +19,8 @@
             android:name=".EditMemoActivity"
             android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="stateHidden" />
+
+        <receiver android:name=".AlertReceiver" />
     </application>
 
 </manifest>
