@@ -12,4 +12,5 @@
     <string name="btn_set_alert">Set an alert</string>
     <string name="tv_no_alarms_set">No alarms set</string>
     <string name="btn_update_alert">Update Alert</string>
+    <string name="tv_current_alert_text">"Alert set for: "</string>
 </resources>

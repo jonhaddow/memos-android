@@ -29,7 +29,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="10dp">
 
         <EditText
             android:id="@+id/etAddMemo"
@@ -44,8 +45,6 @@
             android:id="@+id/fabAddMemo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_margin="16dp"
             android:clickable="true"
             android:src="@drawable/ic_add_plus" />
 

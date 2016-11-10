@@ -19,7 +19,10 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class EditMemoActivity extends AppCompatActivity
         implements DatePickerDialog.OnDateSetListener,
@@ -131,11 +134,17 @@ public class EditMemoActivity extends AppCompatActivity
 
             if (mCurrentAlert != null) {
 
-                int month = mCurrentAlert.getMonth() + 1; // getMonth() starts with index 0
-
-                String text2display = "Alert set for: " +
-                        mCurrentAlert.getHour() + ":" + mCurrentAlert.getMinute() +
-                        " on " + mCurrentAlert.getDay() + "/" + month + "/" + mCurrentAlert.getYear();
+                // Get the current alert information
+                Calendar cal = Calendar.getInstance();
+                cal.set(mCurrentAlert.getYear(),
+                        mCurrentAlert.getMonth(),
+                        mCurrentAlert.getDay(),
+                        mCurrentAlert.getHour(),
+                        mCurrentAlert.getMinute()
+                );
+                Date date = cal.getTime();
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("hh:mma dd/MM/yyyy", Locale.UK);
+                String text2display = getString(R.string.tv_current_alert_text) + dateFormatter.format(date);
 
                 // Update text showing alert details
                 tvCurrentAlert.setText(text2display);

@@ -38,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     private ListView mMemoListview;
     private EditText etAddMemo;
 
+    /**
+     * Called when activity is first created.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +117,9 @@ public class MainActivity extends AppCompatActivity {
         super.onRestart();
     }
 
+    /**
+     * Re-populate listView with memos from database
+     */
     public void populateListView() {
 
         // Populate memo list with updated memos from database
