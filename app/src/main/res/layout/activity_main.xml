@@ -39,7 +39,7 @@
             android:layout_weight="1"
             android:hint="@string/add_memo_hint"
             android:imeOptions="actionSend"
-            android:inputType="text" />
+            android:inputType="textCapSentences" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabAddMemo"
