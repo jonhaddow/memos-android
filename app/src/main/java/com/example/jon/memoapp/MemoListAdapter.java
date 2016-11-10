@@ -71,10 +71,16 @@ public class MemoListAdapter extends ArrayAdapter<Memo> {
         // Set background colour based on memo flag
         LinearLayout memoRow = (LinearLayout) convertView.findViewById(R.id.memoListRow);
 
-        if (memoFlag == MainActivity.FLAG_IMPORTANT) {
-            memoRow.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorImportantFlag));
-        } else if (memoFlag == MainActivity.FLAG_URGENT) {
-            memoRow.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorUrgentFlag));
+        switch (memoFlag) {
+            case MainActivity.FLAG_NORMAL:
+                memoRow.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorNormalFlag));
+                break;
+            case MainActivity.FLAG_IMPORTANT:
+                memoRow.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorImportantFlag));
+                break;
+            case MainActivity.FLAG_URGENT:
+                memoRow.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorUrgentFlag));
+                break;
         }
 
         return convertView;

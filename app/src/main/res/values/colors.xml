@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF5722</color>
     <color name="colorImportantFlag">#ffd180</color>
     <color name="colorUrgentFlag">#ef9a9a</color>
+    <color name="colorNormalFlag">#00000000</color>
 </resources>
