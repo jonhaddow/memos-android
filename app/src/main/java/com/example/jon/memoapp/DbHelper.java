@@ -240,7 +240,7 @@ public class DbHelper extends SQLiteOpenHelper {
         );
 
         Alert alert;
-        cursor.moveToFirst();
+        cursor.moveToNext();
         if (cursor.getCount() == 0) {
             alert = null;
         } else {

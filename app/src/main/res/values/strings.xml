@@ -10,7 +10,6 @@
     <string name="lbl_flag">Set a flag:</string>
     <string name="empty_view_text">No memos to display</string>
     <string name="btn_set_alert">Set an alert</string>
-    <string name="cd_cancel_alert">Cancel alert</string>
     <string name="tv_no_alarms_set">No alarms set</string>
     <string name="btn_update_alert">Update Alert</string>
 </resources>

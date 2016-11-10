@@ -41,7 +41,6 @@ public class EditMemoActivity extends AppCompatActivity
     private int alertMinute;
     private TextView tvCurrentAlert;
     private DbHelper mDbHelper;
-    private Alert mCurrentAlert;
 
     /**
      * Called when activity is created.
@@ -122,7 +121,7 @@ public class EditMemoActivity extends AppCompatActivity
      */
     private void setVisibility() {
 
-        mCurrentAlert = mDbHelper.getAlert(mMemoId);
+        Alert mCurrentAlert = mDbHelper.getAlert(mMemoId);
 
         if (mMemoFlag == MainActivity.FLAG_URGENT) {
 
@@ -148,8 +147,8 @@ public class EditMemoActivity extends AppCompatActivity
                 tvCurrentAlert.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
-                        if(event.getAction() == MotionEvent.ACTION_UP) {
-                            if(event.getRawX() >= tvCurrentAlert.getRight() - tvCurrentAlert.getTotalPaddingRight()) {
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            if (event.getRawX() >= tvCurrentAlert.getRight() - tvCurrentAlert.getTotalPaddingRight()) {
 
                                 // Remove alert
                                 mDbHelper.removeAlert(mMemoId);
