@@ -18,7 +18,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     // Define constants
-    public static final String INTENT_EXTRA_POSITION = "position";
     public static final String INTENT_EXTRA_ID = "id";
     public static final String INTENT_EXTRA_FLAG = "flag";
     public static final String INTENT_EXTRA_NAME = "name";
@@ -137,8 +136,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        // Remove memo from list and send new list to database
-                        mDbHelper.removeMemo(mMemos.get(position).getId());
+                        // Get MemoId
+                        int memoId = mMemos.get(position).getId();
+
+                        // Remove memo and associated alerts from database
+                        mDbHelper.removeMemo(memoId);
+                        mDbHelper.removeAlert(memoId);
+
+                        // Update list view
                         populateListView();
                     }
                 })

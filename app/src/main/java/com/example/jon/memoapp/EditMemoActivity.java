@@ -16,7 +16,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
 public class EditMemoActivity extends AppCompatActivity
@@ -120,33 +119,32 @@ public class EditMemoActivity extends AppCompatActivity
      */
     private void setVisibility() {
 
-        mCurrentAlert = mDbHelper.getCurrentAlert(mMemoId);
+        mCurrentAlert = mDbHelper.getAlert(mMemoId);
 
         if (mMemoFlag == MainActivity.FLAG_URGENT) {
             if (mCurrentAlert != null) {
+
+                // Show current alert details
                 tvCurrentAlert.setVisibility(View.VISIBLE);
                 btnSetAlert.setVisibility(View.INVISIBLE);
 
+                int month = mCurrentAlert.getMonth() + 1; // getMonth() starts with index 0
+
+                String text2display = "Alert set for: " +
+                        mCurrentAlert.getHour() + ":" + mCurrentAlert.getMinute() +
+                        " on " + mCurrentAlert.getDay() + "/" + month + "/" + mCurrentAlert.getYear();
+
+                tvCurrentAlert.setText(text2display);
+
             } else {
+                // Show button to set alert
                 tvCurrentAlert.setVisibility(View.INVISIBLE);
                 btnSetAlert.setVisibility(View.VISIBLE);
             }
         } else {
+            // Hide both
             tvCurrentAlert.setVisibility(View.INVISIBLE);
             btnSetAlert.setVisibility(View.INVISIBLE);
-        }
-
-
-        if (mCurrentAlert != null) {
-
-            int month = mCurrentAlert.getMonth() + 1;
-            String text2display = "Alert set for: " +
-                    mCurrentAlert.getHour() + ":" + mCurrentAlert.getMinute() +
-                    " on " + mCurrentAlert.getDay() + "/" + month + "/" + mCurrentAlert.getYear();
-
-            tvCurrentAlert.setText(text2display);
-        } else {
-            tvCurrentAlert.setText("");
         }
     }
 
@@ -218,17 +216,16 @@ public class EditMemoActivity extends AppCompatActivity
         Alert alert = new Alert(alertYear, alertMonth, alertDay, alertHour, alertMinute, mMemoId);
 
         // Add alert to alerts table
-        DbHelper dbHelper = DbHelper.getInstance(this);
-        ArrayList<Alert> alerts = dbHelper.getAlerts();
-        alerts.add(alert);
-        dbHelper.addAlerts(alerts);
+        mDbHelper.addAlert(alert);
 
-        // Create an Intent and the class which will execute when Alarm triggers
+        // Create an Intent which will execute when Alert triggers
         Intent intentAlarm = new Intent(this, AlertReceiver.class);
 
         // Add intent extras
         intentAlarm.putExtra(MainActivity.INTENT_EXTRA_NAME, mMemoName);
         intentAlarm.putExtra(MainActivity.INTENT_EXTRA_ID, mMemoId);
+
+        // Get alarm manager
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         // Set the exact time when the user will be notified

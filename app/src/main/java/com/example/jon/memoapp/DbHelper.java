@@ -120,10 +120,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 MemoTable.TABLE_NAME, // Table name
                 null, // all columns
                 null, // no criteria
-                null,
-                null,
-                null,
-                null
+                null, null, null, null
         );
 
         // Convert Cursor of rows to ArrayList of Memos
@@ -187,98 +184,64 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Gets all rows from alert table and return an array list containing alerts
+     * Add alert to alerts tables
+     *
+     * @param alert Alert to be added
      */
-    public ArrayList<Alert> getAlerts() {
-
-
-        Cursor cursor = getReadableDatabase().query(
-                DbHelper.AlertTable.TABLE_NAME, // Table name
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        // Convert Cursor of rows to ArrayList of Alerts
-        ArrayList<Alert> alerts = new ArrayList<>();
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-
-                Alert alert = new Alert(
-                        cursor.getInt(1),
-                        cursor.getInt(2),
-                        cursor.getInt(3),
-                        cursor.getInt(4),
-                        cursor.getInt(5),
-                        cursor.getInt(6)
-                );
-                alerts.add(alert);
-            }
-            cursor.close();
-        }
-        return alerts;
-
-    }
-
-    /**
-     * For every alert in the listView, a row is added to the alerts tables
-     */
-    public void addAlerts(ArrayList<Alert> alerts) {
+    public void addAlert(Alert alert) {
 
         // Gets the database in write mode
         SQLiteDatabase db = getWritableDatabase();
 
-        // Delete all rows in table
-        db.delete(DbHelper.AlertTable.TABLE_NAME, null, null);
-
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
 
-        // For each alert, add a row to the table.
-        for (int i = 0; i < alerts.size(); i++) {
+        values.put(AlertTable.COLUMN_NAME_YEAR, alert.getYear());
+        values.put(AlertTable.COLUMN_NAME_MONTH, alert.getMonth());
+        values.put(AlertTable.COLUMN_NAME_DAY, alert.getDay());
+        values.put(AlertTable.COLUMN_NAME_HOUR, alert.getHour());
+        values.put(AlertTable.COLUMN_NAME_MINUTE, alert.getMinute());
+        values.put(AlertTable.COLUMN_NAME_MEMO_ID, alert.getMemoId());
 
-            values.put(AlertTable.COLUMN_NAME_YEAR, alerts.get(i).getYear());
-            values.put(AlertTable.COLUMN_NAME_MONTH, alerts.get(i).getMonth());
-            values.put(AlertTable.COLUMN_NAME_DAY, alerts.get(i).getDay());
-            values.put(AlertTable.COLUMN_NAME_HOUR, alerts.get(i).getHour());
-            values.put(AlertTable.COLUMN_NAME_MINUTE, alerts.get(i).getMinute());
-            values.put(AlertTable.COLUMN_NAME_MEMO_ID, alerts.get(i).getMemoId());
-
-            // Insert the new row
-            db.insert(DbHelper.AlertTable.TABLE_NAME, null, values);
-        }
+        // Insert the new row
+        db.insert(DbHelper.AlertTable.TABLE_NAME, null, values);
     }
 
+    /**
+     * Remove alert from alerts table
+     *
+     * @param memoId Memo Id of the alert to remove
+     */
     public void removeAlert(int memoId) {
 
         // Gets the database in write mode
         SQLiteDatabase db = getWritableDatabase();
 
         // Delete row containing memoId
-        db.delete(AlertTable.TABLE_NAME, AlertTable.COLUMN_NAME_MEMO_ID + " = " + memoId, null);
+        int rowsAffected = db.delete(AlertTable.TABLE_NAME, AlertTable.COLUMN_NAME_MEMO_ID + " = " + memoId, null);
 
-        System.out.println("alert removed");
-
+        System.out.println("alert removed, rows affected: " + rowsAffected);
     }
 
-
-    public Alert getCurrentAlert(int memoId) {
+    /**
+     * Get alerts matching the memo id
+     *
+     * @param memoId Memo id to be compared to each row in alerts table
+     * @return Alert object matching memo id.
+     */
+    public Alert getAlert(int memoId) {
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(
-                AlertTable.TABLE_NAME, null,
+                AlertTable.TABLE_NAME,
+                null, // All columns
                 AlertTable.COLUMN_NAME_MEMO_ID + " = " + memoId,
-                null,
-                null,
-                null,
-                null
+                null, null, null, null
         );
 
         Alert alert;
-        if (!(cursor.moveToFirst()) || cursor.getCount() == 0) {
+        cursor.moveToFirst();
+        if (cursor.getCount() == 0) {
             alert = null;
         } else {
             alert = new Alert(

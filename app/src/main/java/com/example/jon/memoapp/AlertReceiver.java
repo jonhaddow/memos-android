@@ -8,8 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import java.util.ArrayList;
-
 public class AlertReceiver extends BroadcastReceiver {
 
     /**
@@ -25,6 +23,14 @@ public class AlertReceiver extends BroadcastReceiver {
 
         int memoId = intent.getIntExtra(MainActivity.INTENT_EXTRA_ID, 0);
         String memoName = intent.getStringExtra(MainActivity.INTENT_EXTRA_NAME);
+
+        // Check that alert still exists (hasn't been cancelled)
+        Alert alert = dbHelper.getAlert(memoId);
+        if (alert == null) {
+            System.out.println("no alert found (receiver)");
+            return;
+        }
+
 
         // Create notification with Memo Name
         Notification.Builder mBuilder =
