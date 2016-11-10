@@ -93,16 +93,15 @@ public class MainActivity extends AppCompatActivity {
         if (!memoName.equals("")) {
 
             // Add memo to list
-            mMemos.add(new Memo(memoName, MainActivity.FLAG_NORMAL));
+            Memo memo = new Memo(memoName, MainActivity.FLAG_NORMAL);
 
             // Clear text box
             etAddMemo.setText("");
 
-            // Update list view
-            mMemoAdapter.notifyDataSetChanged();
+            // Add memo to memos table in database
+            mDbHelper.addMemo(memo);
 
-            // Send updated list to database
-            mDbHelper.addMemos(mMemos);
+            populateListView();
         }
     }
 
@@ -139,8 +138,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                         // Remove memo from list and send new list to database
-                        mMemos.remove(position);
-                        mDbHelper.addMemos(mMemos);
+                        mDbHelper.removeMemo(mMemos.get(position).getId());
                         populateListView();
                     }
                 })
@@ -162,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Send properties as intent extras
         Intent intent = new Intent(this, EditMemoActivity.class);
-        intent.putExtra(INTENT_EXTRA_POSITION, position);
         intent.putExtra(INTENT_EXTRA_ID, memoId);
         intent.putExtra(INTENT_EXTRA_NAME, memoName);
         intent.putExtra(INTENT_EXTRA_FLAG, memoFlag);

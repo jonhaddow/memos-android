@@ -25,7 +25,6 @@ public class EditMemoActivity extends AppCompatActivity
 
 
     // Properties of current memo being edited
-    private int mMemoPosition;
     private int mMemoId;
     private String mMemoName;
     private int mMemoFlag;
@@ -52,7 +51,6 @@ public class EditMemoActivity extends AppCompatActivity
 
         // Get intent and memo properties from intent extras.
         Intent intent = getIntent();
-        mMemoPosition = intent.getIntExtra(MainActivity.INTENT_EXTRA_POSITION, 0);
         mMemoId = intent.getIntExtra(MainActivity.INTENT_EXTRA_ID, 0);
         mMemoName = intent.getStringExtra(MainActivity.INTENT_EXTRA_NAME);
         mMemoFlag = intent.getIntExtra(MainActivity.INTENT_EXTRA_FLAG, 0);
@@ -141,10 +139,10 @@ public class EditMemoActivity extends AppCompatActivity
 
         if (mCurrentAlert != null) {
 
-            int month = mCurrentAlert.getMonth()+1;
+            int month = mCurrentAlert.getMonth() + 1;
             String text2display = "Alert set for: " +
                     mCurrentAlert.getHour() + ":" + mCurrentAlert.getMinute() +
-                    " on " + mCurrentAlert.getDay()+"/"+month+"/"+mCurrentAlert.getYear();
+                    " on " + mCurrentAlert.getDay() + "/" + month + "/" + mCurrentAlert.getYear();
 
             tvCurrentAlert.setText(text2display);
         } else {
@@ -157,7 +155,7 @@ public class EditMemoActivity extends AppCompatActivity
      */
     @Override
     protected void onPause() {
-        storeMemos();
+        updateMemo();
         super.onPause();
     }
 
@@ -166,31 +164,21 @@ public class EditMemoActivity extends AppCompatActivity
      */
     @Override
     public void onBackPressed() {
-        storeMemos();
+        updateMemo();
         super.onBackPressed();
     }
 
     /**
      * Called when activity is paused/closed.
-     * It get the current list of memos, updates the selected memo, and returns the list.
+     * Update the selected memo.
      */
-    private void storeMemos() {
+    private void updateMemo() {
 
-        // Get singleton instance.
-        DbHelper dbHelper = DbHelper.getInstance(this);
-
-        // Get current list of memos
-        ArrayList<Memo> memos = dbHelper.getMemos();
-
-        // Get new memo name
+        // Get new memo content
         mMemoName = etMemoName.getText().toString();
 
-        // Override memo with new data
-        memos.set(mMemoPosition, new Memo(mMemoName, mMemoFlag));
-
-        // Send back to database
-        dbHelper.addMemos(memos);
-
+        // Update memo in database
+        mDbHelper.updateMemo(new Memo(mMemoId, mMemoName, mMemoFlag));
     }
 
     /**
@@ -239,7 +227,6 @@ public class EditMemoActivity extends AppCompatActivity
         Intent intentAlarm = new Intent(this, AlertReceiver.class);
 
         // Add intent extras
-        intentAlarm.putExtra(MainActivity.INTENT_EXTRA_POSITION, mMemoPosition);
         intentAlarm.putExtra(MainActivity.INTENT_EXTRA_NAME, mMemoName);
         intentAlarm.putExtra(MainActivity.INTENT_EXTRA_ID, mMemoId);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);

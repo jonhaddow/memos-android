@@ -25,7 +25,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private static class MemoTable implements BaseColumns {
         private static final String TABLE_NAME = "memos";
         private static final String COLUMN_NAME_FLAG = "flag";
-        private static final String COLUMN_NAME_CONTENT = "content";
+        private static final String COLUMN_NAME_TITLE = "title";
     }
 
     /**
@@ -46,7 +46,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_MEMO_TABLE =
             "CREATE TABLE " + MemoTable.TABLE_NAME + " (" +
                     MemoTable._ID + " INTEGER PRIMARY KEY," +
-                    MemoTable.COLUMN_NAME_CONTENT + " TEXT NOT NULL," +
+                    MemoTable.COLUMN_NAME_TITLE + " TEXT NOT NULL," +
                     MemoTable.COLUMN_NAME_FLAG + " INTEGER NOT NULL )";
 
     // SQL Query to create a alert table
@@ -117,9 +117,9 @@ public class DbHelper extends SQLiteOpenHelper {
     public ArrayList<Memo> getMemos() {
 
         Cursor cursor = getReadableDatabase().query(
-                DbHelper.MemoTable.TABLE_NAME, // Table name
-                null,
-                null,
+                MemoTable.TABLE_NAME, // Table name
+                null, // all columns
+                null, // no criteria
                 null,
                 null,
                 null,
@@ -128,39 +128,62 @@ public class DbHelper extends SQLiteOpenHelper {
 
         // Convert Cursor of rows to ArrayList of Memos
         ArrayList<Memo> memos = new ArrayList<>();
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                Memo memo = new Memo(cursor.getInt(0), cursor.getString(1), cursor.getInt(2));
-                memos.add(memo);
-            }
-            cursor.close();
+        while (cursor.moveToNext()) {
+            memos.add(new Memo(cursor.getInt(0), cursor.getString(1), cursor.getInt(2)));
         }
+        cursor.close();
+
         return memos;
     }
 
     /**
-     * For every memo in the listView, a row is added to the memos tables
+     * Add a memo to the memos table
      */
-    public void addMemos(ArrayList<Memo> memos) {
+    public void addMemo(Memo memo) {
 
         // Gets the database in write mode
         SQLiteDatabase db = getWritableDatabase();
 
-        // Delete all rows in table
-        db.delete(DbHelper.MemoTable.TABLE_NAME, null, null);
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+
+        // Pair columns and values
+        values.put(MemoTable.COLUMN_NAME_TITLE, memo.getName());
+        values.put(MemoTable.COLUMN_NAME_FLAG, memo.getFlag());
+
+        // Insert into table
+        db.insert(MemoTable.TABLE_NAME, null, values);
+    }
+
+    /**
+     * Updates a memo in the memos table
+     */
+    public void updateMemo(Memo memo) {
+
+        // Gets the database in write mode
+        SQLiteDatabase db = getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
 
-        // For each memo in the listview, add a row to the table.
-        for (int i = 0; i < memos.size(); i++) {
+        // Pair columns and values
+        values.put(MemoTable.COLUMN_NAME_TITLE, memo.getName());
+        values.put(MemoTable.COLUMN_NAME_FLAG, memo.getFlag());
 
-            values.put(MemoTable.COLUMN_NAME_CONTENT, memos.get(i).getName());
-            values.put(MemoTable.COLUMN_NAME_FLAG, memos.get(i).getFlag());
+        // Insert into table
+        db.update(MemoTable.TABLE_NAME, values, MemoTable._ID + "=" + memo.getId(), null);
+    }
 
-            // Insert the new row
-            db.insert(DbHelper.MemoTable.TABLE_NAME, null, values);
-        }
+    /**
+     * Remove a memo from the memos table
+     */
+    public void removeMemo(int memoId) {
+
+        // Gets the database in write mode
+        SQLiteDatabase db = getWritableDatabase();
+
+        // Delete row containing memoId
+        db.delete(MemoTable.TABLE_NAME, MemoTable._ID + "=" + memoId, null);
     }
 
     /**
