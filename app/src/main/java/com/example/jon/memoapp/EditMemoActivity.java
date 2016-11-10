@@ -5,9 +5,12 @@ import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -122,11 +125,12 @@ public class EditMemoActivity extends AppCompatActivity
         mCurrentAlert = mDbHelper.getAlert(mMemoId);
 
         if (mMemoFlag == MainActivity.FLAG_URGENT) {
-            if (mCurrentAlert != null) {
 
-                // Show current alert details
-                tvCurrentAlert.setVisibility(View.VISIBLE);
-                btnSetAlert.setVisibility(View.INVISIBLE);
+            // Show alert controls
+            tvCurrentAlert.setVisibility(View.VISIBLE);
+            btnSetAlert.setVisibility(View.VISIBLE);
+
+            if (mCurrentAlert != null) {
 
                 int month = mCurrentAlert.getMonth() + 1; // getMonth() starts with index 0
 
@@ -134,12 +138,45 @@ public class EditMemoActivity extends AppCompatActivity
                         mCurrentAlert.getHour() + ":" + mCurrentAlert.getMinute() +
                         " on " + mCurrentAlert.getDay() + "/" + month + "/" + mCurrentAlert.getYear();
 
+                // Update text showing alert details
                 tvCurrentAlert.setText(text2display);
 
+                // Draw cancel icon onto the right of the text view
+                tvCurrentAlert.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_cancel, 0);
+
+                // Set on click listener for the cancel icon
+                tvCurrentAlert.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if(event.getAction() == MotionEvent.ACTION_UP) {
+                            if(event.getRawX() >= tvCurrentAlert.getRight() - tvCurrentAlert.getTotalPaddingRight()) {
+
+                                // Remove alert
+                                mDbHelper.removeAlert(mMemoId);
+
+                                // Update UI
+                                setVisibility();
+
+                                return true;
+                            }
+                        }
+                        return true;
+                    }
+                });
+
+                // Update text
+                btnSetAlert.setText(R.string.btn_update_alert);
+
             } else {
-                // Show button to set alert
-                tvCurrentAlert.setVisibility(View.INVISIBLE);
-                btnSetAlert.setVisibility(View.VISIBLE);
+
+                // Update text
+                tvCurrentAlert.setText(R.string.tv_no_alarms_set);
+                btnSetAlert.setText(R.string.btn_set_alert);
+
+                // Clear drawables
+                tvCurrentAlert.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+
+
             }
         } else {
             // Hide both
@@ -207,12 +244,43 @@ public class EditMemoActivity extends AppCompatActivity
         alertHour = hour;
         alertMinute = minute;
 
-        createAlert();
+        checkAlert();
+
+    }
+
+    /**
+     * Check if an alert already exists. If so, ask if user wants to replace it.
+     */
+    private void checkAlert() {
+
+        Alert alert = mDbHelper.getAlert(mMemoId);
+
+        // Check if alert exists
+        if (alert != null) {
+
+            // Ask if user wants to replace alert
+            new AlertDialog.Builder(this)
+                    .setMessage("Are you sure you want to replace the previous alert?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                            // Remove previous alert
+                            mDbHelper.removeAlert(mMemoId);
+
+                            createAlert();
+                        }
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        } else {
+            createAlert();
+        }
+
 
     }
 
     private void createAlert() {
-
         Alert alert = new Alert(alertYear, alertMonth, alertDay, alertHour, alertMinute, mMemoId);
 
         // Add alert to alerts table

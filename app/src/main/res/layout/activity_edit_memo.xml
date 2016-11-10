@@ -76,8 +76,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            tools:text="Alert set for 5:30pm 01/01/2016" />
-
+            tools:text="No Alarms set"/>
 
         <Button
             android:id="@+id/btnSetAlert"
@@ -85,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:onClick="setAlert"
-            android:text="@string/btn_set_alert" />
+            tools:text="@string/btn_set_alert" />
 
     </LinearLayout>
 </ScrollView>
