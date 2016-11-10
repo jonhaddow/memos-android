@@ -134,6 +134,30 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Get Memo by memo Id
+     */
+    public Memo getMemo(int memoId) {
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(
+                MemoTable.TABLE_NAME,
+                null, // All columns
+                MemoTable._ID + " = " + memoId,
+                null, null, null, null
+        );
+
+        cursor.moveToNext();
+        Memo memo = new Memo(
+                cursor.getInt(0),
+                cursor.getString(1),
+                cursor.getInt(2)
+        );
+
+        cursor.close();
+        return memo;
+    }
+
+    /**
      * Add a memo to the memos table
      */
     public void addMemo(Memo memo) {
@@ -218,9 +242,7 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
 
         // Delete row containing memoId
-        int rowsAffected = db.delete(AlertTable.TABLE_NAME, AlertTable.COLUMN_NAME_MEMO_ID + " = " + memoId, null);
-
-        System.out.println("alert removed, rows affected: " + rowsAffected);
+        db.delete(AlertTable.TABLE_NAME, AlertTable.COLUMN_NAME_MEMO_ID + " = " + memoId, null);
     }
 
     /**

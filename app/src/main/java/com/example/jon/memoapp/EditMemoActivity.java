@@ -298,7 +298,6 @@ public class EditMemoActivity extends AppCompatActivity
         Intent intentAlarm = new Intent(this, AlertReceiver.class);
 
         // Add intent extras
-        intentAlarm.putExtra(MainActivity.INTENT_EXTRA_NAME, mMemoName);
         intentAlarm.putExtra(MainActivity.INTENT_EXTRA_ID, mMemoId);
 
         // Get alarm manager

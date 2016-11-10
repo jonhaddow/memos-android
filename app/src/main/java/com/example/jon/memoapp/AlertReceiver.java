@@ -22,22 +22,22 @@ public class AlertReceiver extends BroadcastReceiver {
         DbHelper dbHelper = DbHelper.getInstance(context);
 
         int memoId = intent.getIntExtra(MainActivity.INTENT_EXTRA_ID, 0);
-        String memoName = intent.getStringExtra(MainActivity.INTENT_EXTRA_NAME);
 
         // Check that alert still exists (hasn't been cancelled)
         Alert alert = dbHelper.getAlert(memoId);
         if (alert == null) {
-            System.out.println("no alert found (receiver)");
             return;
         }
 
+        // Get current memo
+        Memo memo = dbHelper.getMemo(memoId);
 
         // Create notification with Memo Name
         Notification.Builder mBuilder =
                 new Notification.Builder(context)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle("Memo Alert")
-                        .setContentText(memoName)
+                        .setContentText(memo.getName())
                         .setAutoCancel(true);
 
         // Creates an explicit intent for the MainActivity when user clicks on notification
