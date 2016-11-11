@@ -1,9 +1,14 @@
 package com.example.jon.memoapp;
 
-
+/**
+ * This class holds the data relating to a Memo's Alert.
+ */
 public class Alert {
 
+    // This is the memoId of the memo associated with the alert.
     private int memoId;
+
+    // These fields hold the exact time the user will be alerted.
     private int year;
     private int month;
     private int day;
@@ -23,47 +28,24 @@ public class Alert {
         return year;
     }
 
-    public void setYear(int year) {
-        this.year = year;
-    }
-
     public int getMonth() {
         return month;
-    }
-
-    public void setMonth(int month) {
-        this.month = month;
     }
 
     public int getDay() {
         return day;
     }
 
-    public void setDay(int day) {
-        this.day = day;
-    }
-
     public int getHour() {
         return hour;
-    }
-
-    public void setHour(int hour) {
-        this.hour = hour;
     }
 
     public int getMinute() {
         return minute;
     }
 
-    public void setMinute(int minute) {
-        this.minute = minute;
-    }
-
     public int getMemoId() {
         return memoId;
     }
 
-    public void setMemoId(int memoId) {
-        this.memoId = memoId;
-    }
 }

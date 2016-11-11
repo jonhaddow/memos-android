@@ -14,17 +14,29 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+/**
+ * This is the adapter which manages the list view items.
+ */
 public class MemoListAdapter extends ArrayAdapter<Memo> {
 
-    private Context mContext;
+    // Hold the activity context.
+    private final Context mContext;
 
+    /**
+     * Constructor.
+     */
     public MemoListAdapter(Context context, int resource, ArrayList<Memo> objects) {
         super(context, resource, objects);
         mContext = context;
     }
 
     /**
-     * Get the layout for each row in a listview.
+     * Get the layout for each row in a list view.
+     *
+     * @param position    Position in list view.
+     * @param convertView View to be inflated or reused.
+     * @param parent      Parent view.
+     * @return View to display for that list item.
      */
     @NonNull
     @Override
@@ -37,26 +49,25 @@ public class MemoListAdapter extends ArrayAdapter<Memo> {
             convertView = inflater.inflate(R.layout.memo_item, parent, false);
         }
 
-        // get current memo
+        // Get current memo properties.
         Memo memo = getItem(position);
-        String memoName = null;
-        int memoFlag = 0;
-        if (memo != null) {
-            memoName = memo.getName();
-            memoFlag = memo.getFlag();
-        }
+        String memoName = memo.getName();
+        int memoFlag = memo.getFlag();
 
-        // Set the memo content for this row.
-        TextView text = (TextView) convertView.findViewById(R.id.tvMemoContent);
-        text.setText(memoName);
-
-        // Get the edit and delete icons and set OnClickListeners
+        // Get the list layout elements.
+        TextView tvMemoContent = (TextView) convertView.findViewById(R.id.tvMemoContent);
         ImageView ivEditMemo = (ImageView) convertView.findViewById(R.id.ivEditMemo);
         ImageView ivDeleteMemo = (ImageView) convertView.findViewById(R.id.ivDeleteMemo);
 
+        // Set the text view as memo content.
+        tvMemoContent.setText(memoName);
+
+        // Set on click listeners.
         ivDeleteMemo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                // Call main activity method to delete selected memo.
                 ((MainActivity) mContext).deleteMemo(position);
             }
         });
@@ -64,13 +75,14 @@ public class MemoListAdapter extends ArrayAdapter<Memo> {
         ivEditMemo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                // Call main activity method to edit selected memo.
                 ((MainActivity) mContext).editMemo(position);
             }
         });
 
-        // Set background colour based on memo flag
+        // Set background colour of list item layout based on memo flag.
         LinearLayout memoRow = (LinearLayout) convertView.findViewById(R.id.memoListRow);
-
         switch (memoFlag) {
             case MainActivity.FLAG_NORMAL:
                 memoRow.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorNormalFlag));
@@ -85,5 +97,4 @@ public class MemoListAdapter extends ArrayAdapter<Memo> {
 
         return convertView;
     }
-
 }

@@ -1,21 +1,19 @@
 package com.example.jon.memoapp;
 
+/**
+ * This class holds the data relating to a Memo.
+ */
 public class Memo {
 
+    // The memo id.
     private int id;
 
-    // String content of memo
-    private String name;
+    // String content of memo.
+    private final String name;
 
-    // int representing flag of memo
-    private int flag;
+    // Int representing flag of memo (0-Normal, 1-Important, 2-Urgent).
+    private final int flag;
 
-    /**
-     * Constructor
-     *
-     * @param name content of memo
-     * @param flag flag of memo
-     */
     public Memo(String name, int flag) {
         this.name = name;
         this.flag = flag;
@@ -38,7 +36,4 @@ public class Memo {
     public int getFlag() {
         return flag;
     }
-
-
-
 }

@@ -13,4 +13,11 @@
     <string name="tv_no_alarms_set">No alarms set</string>
     <string name="btn_update_alert">Update Alert</string>
     <string name="tv_current_alert_text">"Alert set for: "</string>
+    <string name="notification_title">Memo Alert</string>
+    <string name="alert_replace_message">Are you sure you want to replace the previous alert?</string>
+    <string name="positive_yes">Yes</string>
+    <string name="negative_no">No</string>
+    <string name="delete_memo_message">Are you sure?</string>
+    <string name="positive_delete">Delete</string>
+    <string name="negative_cancel">Cancel</string>
 </resources>
