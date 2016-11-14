@@ -49,7 +49,7 @@ public class AlertReceiver extends BroadcastReceiver {
                         .setVibrate(new long[]{0, 500, 500, 500});
 
         // Create an explicit intent for the MainActivity when user clicks on notification.
-        Intent resultIntent = new Intent(context, MainActivity.class);  
+        Intent resultIntent = new Intent(context, MainActivity.class);
 
         // Adds the Intent that starts the Activity to the top of the stack.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);

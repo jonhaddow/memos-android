@@ -3,4 +3,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="memo_icon_padding">4dp</dimen>
+    <dimen name="edit_memo_spacing">30dp</dimen>
+    <dimen name="memo_text_font_size">20sp</dimen>
 </resources>

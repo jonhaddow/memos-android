@@ -31,8 +31,8 @@ public class EditMemoActivity extends AppCompatActivity
         implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     // Tags for the date picker and time picker fragments
-    public static final String TIME_PICKER = "timePicker";
-    public static final String DATE_PICKER = "datePicker";
+    private static final String TIME_PICKER = "timePicker";
+    private static final String DATE_PICKER = "datePicker";
 
     // Properties of current memo being edited.
     private int mMemoId;
