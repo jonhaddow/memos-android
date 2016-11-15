@@ -5,4 +5,5 @@
     <dimen name="memo_icon_padding">4dp</dimen>
     <dimen name="edit_memo_spacing">30dp</dimen>
     <dimen name="memo_text_font_size">20sp</dimen>
+    <dimen name="icon_size">24dp</dimen>
 </resources>

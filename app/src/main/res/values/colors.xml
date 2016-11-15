@@ -6,4 +6,6 @@
     <color name="colorImportantFlag">#ffd180</color>
     <color name="colorUrgentFlag">#ef9a9a</color>
     <color name="colorNormalFlag">#00000000</color>
+    <color name="colorDeleteMemoIcon">#d50000</color>
+    <color name="colorEditMemoIcon">#9e9e9e</color>
 </resources>

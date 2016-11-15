@@ -22,6 +22,7 @@ public class MemoListAdapter extends ArrayAdapter<Memo> {
     // Hold the activity context.
     private final Context mContext;
 
+
     /**
      * Constructor.
      */
