@@ -1,4 +1,4 @@
-# memos-ando
+# Memo App
 
 This project is a Memo application for Android. It allows a user to add, delete and edit a list of memos. 
 
